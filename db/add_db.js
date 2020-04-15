@@ -40,6 +40,7 @@
 //用户
 var joblistSchema = new Schema({ 
     jobtitle :{type:String},
+    jobrecord:{type:String},
     urgency : {type:Number},//紧急程度,1 紧急
     isdone : {type:Number,default:0},//1 完成
     time : {type:String,default:moment().format('YYYY-MM-DD HH:mm')}

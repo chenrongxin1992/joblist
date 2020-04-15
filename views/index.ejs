@@ -67,7 +67,7 @@
       	url:'/joblist/tb_list',
       	page:true,
       	cols:[[
-      		{field:'jobtitle',title:'待办'}
+      		{field:'jobtitle',title:'待办',event:'jobrecord'}
       		,{title:'操作', align:'center', toolbar: '#yjfxbar'} //这里的toolbar值是模板元素的选择器
       	]],
       	done:function(res,curr,count){
@@ -87,14 +87,35 @@
       	url:'/joblist/tb_list_done',
       	page:true,
       	cols:[[
-      		{field:'jobtitle',title:'已完成'}
+      		{field:'jobtitle',title:'已完成',event:'jobrecord_done'}
       	]]
       })
+      table.on('tool(tb_joblist_done)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 		lay-filter="对应的值"
+	  		let data = obj.data; //获得当前行数据
+	 		 let layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+	  		let tr = obj.tr; //获得当前行 tr 的DOM对象
+	  		console.log('dddd')
+	  		if(layEvent === 'jobrecord_done'){ //删除}
+	  			console.log('jobrecord_done-------')
+			  	let index = layui.layer.open({
+		            title : "记录",
+		            type : 2,
+		            area: ['900px', '600px'],
+		            content : "jobrecord?_id="+data._id,
+		            success : function(layero, index){
+		            },
+		            end:function(){
+		            	console.log('刷新table')
+		            	table.reload('joblist_tb_done')
+		            }
+		        })
+	  		}
+	  	})
       //监听工具条
 	table.on('tool(tb_joblist)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
-	  var data = obj.data; //获得当前行数据
-	  var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-	  var tr = obj.tr; //获得当前行 tr 的DOM对象
+	  let data = obj.data; //获得当前行数据
+	  let layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+	  let tr = obj.tr; //获得当前行 tr 的DOM对象
 	  console.log('dddd')
 	  if(layEvent === 'del'){ //删除
 	    layer.confirm('确定删除吗?',{skin: 'layui-layer-molv' //样式类名
@@ -185,6 +206,20 @@
 			})
 	  	}
 	  	return false
+	  }else if(layEvent === 'jobrecord'){
+	  	console.log('jobrecord-------')
+	  	let index = layui.layer.open({
+            title : "记录",
+            type : 2,
+            area: ['900px', '600px'],
+            content : "jobrecord?_id="+data._id,
+            success : function(layero, index){
+            },
+            end:function(){
+            	console.log('刷新table')
+            	table.reload('joblist_tb')
+            }
+        })
 	  }
 	});
       //监听提交 13760277012
@@ -223,9 +258,9 @@
 </script>
 <script type="text/html" id="yjfxbar">
   {{# if(d.urgency == 1){ }}
-  	<a class="layui-btn layui-btn-xs" lay-event="changeagency" value='0'>降低紧急程度</a>
+  	<a class="layui-btn layui-btn-xs" lay-event="changeagency" value='0'><i class="layui-icon">&#xe61a;</i>降低紧急程度</a>
   {{# }else{ }}
-  	<a class="layui-btn layui-btn-xs" lay-event="changeagency" value='1'>提高紧急程度</a>
+  	<a class="layui-btn layui-btn-xs" lay-event="changeagency" value='1'><i class="layui-icon">&#xe619;</i>提高紧急程度</a>
   {{# } }}
   <a class="layui-btn layui-btn-xs" lay-event="done">done</a>
   <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon">&#xe640;</i>删除</a>

@@ -48,6 +48,7 @@ router.get('/tb_list',function(req,res){
 				console.log('不带搜索参数')
 				let search = joblist.find({'isdone':{'$ne':'1'}})
 					search.sort({'urgency':-1})//正序
+					search.sort({'_id':-1})
 					//search.where('beizhu').equals('0')
 					search.limit(limit)
 					search.skip(numSkip)
@@ -144,6 +145,31 @@ router.get('/tb_list_done',function(req,res){
 		}
 		console.log('joblist async waterfall success')
 		return res.json({'code':0,'msg':'获取数据成功','count':total,'data':result})
+	})
+})
+router.get('/jobrecord',function(req,res){
+	console.log('_id----->',req.query._id)
+	let search = joblist.findOne({})
+		search.where('_id').equals(req.query._id)
+		search.exec(function(err,doc){
+			if(err){
+				console.log('err',err)
+				return res.json(err)
+			}
+			return res.render('jobrecord',{'doc':doc})
+		})
+}).post('/jobrecord',function(req,res){
+	let obj = {
+		jobtitle:req.body.jobtitle,
+		jobrecord:req.body.jobrecord
+	}
+	console.log('obj--->',obj)
+	joblist.updateOne({'_id':req.body._id},obj,function(updateerr){
+		if(updateerr){
+			console.log('updateerr--->',updateerr)
+			return res.json({'code':-1,'msg':updateerr})
+		}
+		return res.json({'code':0,'msg':'success'})
 	})
 })
 module.exports = router; 
