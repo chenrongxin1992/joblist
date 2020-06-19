@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const joblist = require('../db/add_db').joblist
+const shangan = require('../db/add_db').shangan
 const async = require('async')
 
 /* GET home page. */
@@ -168,6 +169,76 @@ router.get('/jobrecord',function(req,res){
 		if(updateerr){
 			console.log('updateerr--->',updateerr)
 			return res.json({'code':-1,'msg':updateerr})
+		}
+		return res.json({'code':0,'msg':'success'})
+	})
+})
+//上岸
+router.get('/addshangan', function(req, res, next) {
+	res.render('addshangan', { title: '上岸资料'});
+}).post('/addshangan',function(req,res){
+	let newshangan = new shangan({
+			title:req.body.title,
+			shangan:req.body.shangan
+		})
+		newshangan.save(function(err){
+			if(err){
+				return res.json({'code':-1,'msg':err})
+			}
+			return res.json({'code':0,'msg':'success'})
+		})
+})
+router.get('/shanganziliao', function(req, res, next) {
+	let search = shangan.findOne({})
+		search.exec(function(err,doc){
+			if(err){
+				return res.json(err)
+			}
+			if(!doc){
+				res.render('shanganziliao', { title: '上岸资料','doc':null});
+			}
+			res.render('shanganziliao', { title: '上岸资料','doc':doc});
+		})
+})
+router.get('/shanganlist',function(req,res){
+	let search = shangan.find({})
+		search.sort({'title':-1})
+		search.exec(function(err,docs){
+			if(err){
+				return res.json(err)
+			}
+			if(docs.length == 0){
+				res.render('addshangan', { title: '上岸资料','docs':docs});
+			}
+			res.render('shanganlist', { title: '上岸资料','docs':docs});
+		})
+}).get('/editshangan',function(req,res){
+	let search = shangan.findOne({})
+		search.where('_id').equals(req.query._id)
+		search.exec(function(err,doc){
+			if(err){
+				return res.json(err)
+			}
+			res.render('editshangan', { title: '上岸资料','doc':doc});
+		})
+}).post('/editshangan',function(req,res){
+	let obj = {
+		title:req.body.title,
+		shangan:req.body.shangan
+	}
+	console.log('obj--->',obj)
+	shangan.updateOne({'_id':req.body._id},obj,function(updateerr){
+		if(updateerr){
+			console.log('updateerr--->',updateerr)
+			return res.json({'code':-1,'msg':updateerr})
+		}
+		//test
+		return res.json({'code':0,'msg':'success'})
+	})
+}).post('/deletelist',function(req,res){
+	shangan.deleteOne({'_id':req.body._id},function(error){
+		if(error){
+			return res.json({'code':-1,'msg':error})
 		}
 		return res.json({'code':0,'msg':'success'})
 	})

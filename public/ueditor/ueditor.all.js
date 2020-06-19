@@ -6902,6 +6902,7 @@ var fillCharReg = new RegExp(domUtils.fillChar, 'g');
                     //设置默认字体和字号
                     //font-family不能呢随便改，在safari下fillchar会有解析问题
                     'body{margin:8px;font-family:sans-serif;font-size:16px;}' +
+                    'img{max-width:100%;}'+
                     //设置段落间距
                     'p{margin:5px 0;}</style>' +
                     ( options.iframeCssUrl ? '<link rel=\'stylesheet\' type=\'text/css\' href=\'' + utils.unhtml(options.iframeCssUrl) + '\'/>' : '' ) +
@@ -7320,10 +7321,10 @@ var fillCharReg = new RegExp(domUtils.fillChar, 'g');
         setContent: function (html, isAppendTo, notFireSelectionchange) {
             var me = this;
 
-            me.fireEvent('beforesetcontent', html);
-            var root = UE.htmlparser(html);
-            me.filterInputRule(root);
-            html = root.toHtml();
+            // me.fireEvent('beforesetcontent', html);
+            // var root = UE.htmlparser(html);
+            // me.filterInputRule(root);
+            // html = root.toHtml();
 
             me.body.innerHTML = (isAppendTo ? me.body.innerHTML : '') + html;
 
@@ -17712,7 +17713,8 @@ UE.plugins['video'] = function (){
             for(var i=0,vi,len = videoObjs.length;i<len;i++){
                 vi = videoObjs[i];
                 cl = (type == 'upload' ? 'edui-upload-video video-js vjs-default-skin':'edui-faked-video');
-                html.push(creatInsertStr( vi.url, vi.width || 420,  vi.height || 280, id + i, null, cl, 'image'));
+                //html.push(creatInsertStr( vi.url, vi.width || 420,  vi.height || 280, id + i, null, cl, 'image'));
+                html.push(creatInsertStr( vi.url, vi.width || 420,  vi.height || 280, id + i, null, cl, 'video'));
             }
             me.execCommand("inserthtml",html.join(""),true);
             var rng = this.selection.getRange();

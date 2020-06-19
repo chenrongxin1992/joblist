@@ -3,13 +3,13 @@
     /* 上传图片配置项 */
     "imageActionName": "uploadimage", /* 执行上传图片的action名称 */
     "imageFieldName": "upfile", /* 提交的图片表单名称 */
-    "imageMaxSize": 2048000, /* 上传大小限制，单位B */
+    "imageMaxSize": 8192000, /* 上传大小限制，单位B */
     "imageAllowFiles": [".png", ".jpg", ".jpeg", ".gif", ".bmp"], /* 上传图片格式显示 */
     "imageCompressEnable": true, /* 是否压缩图片,默认是true */
     "imageCompressBorder": 1600, /* 图片压缩最长边限制 */
     "imageInsertAlign": "none", /* 插入的图片浮动方式 */
-    "imageUrlPrefix": "", /* 图片访问路径前缀 */
-    "imagePathFormat": "/attachment/ueditor_images/{yyyy}_{mm}_{dd}_{rand:6}_{filename}", 
+    //"imagePathFormat": "{rand:6}_{filename}", 
+    "imageUrlPrefix": "/joblist", /* 文件访问路径前缀 */
     /*"imagePathFormat": "/ueditor/php/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}", *//* 上传保存路径,可以自定义保存路径和文件名格式 */
                                 /* {filename} 会替换成原文件名,配置这项需要注意中文乱码问题 */
                                 /* {rand:6} 会替换成随机数,后面的数字是随机数的位数 */
@@ -37,6 +37,7 @@
     "snapscreenPathFormat": "/attachment/ueditor_images/{yyyy}_{mm}_{dd}_{rand:6}_{filename}", /* 上传保存路径,可以自定义保存路径和文件名格式 */
     "snapscreenUrlPrefix": "", /* 图片访问路径前缀 */
     "snapscreenInsertAlign": "none", /* 插入的图片浮动方式 */
+    "snapscreenUrlPrefix": "http://116.13.96.53:81/joblist", /* 文件访问路径前缀 */
 
     /* 抓取远程图片配置 */
     "catcherLocalDomain": ["127.0.0.1", "localhost", "img.baidu.com"],
@@ -52,7 +53,8 @@
     "videoFieldName": "upfile", /* 提交的视频表单名称 */
     "videoPathFormat": "/attachment/ueditor_videos/{yyyy}_{mm}_{dd}_{rand:6}_{filename}", /* 上传保存路径,可以自定义保存路径和文件名格式 */
     "videoUrlPrefix": "", /* 视频访问路径前缀 */
-    "videoMaxSize": 102400000, /* 上传大小限制，单位B，默认100MB */
+    "videoMaxSize": 409600000, /* 上传大小限制，单位B，默认100MB */
+    "videoUrlPrefix": "http://116.13.96.53:81/joblist", /* 文件访问路径前缀 */
     "videoAllowFiles": [
         ".flv", ".swf", ".mkv", ".avi", ".rm", ".rmvb", ".mpeg", ".mpg",
         ".ogg", ".ogv", ".mov", ".wmv", ".mp4", ".webm", ".mp3", ".wav", ".mid"], /* 上传视频格式显示 */

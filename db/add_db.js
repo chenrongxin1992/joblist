@@ -46,4 +46,10 @@ var joblistSchema = new Schema({
     time : {type:String,default:moment().format('YYYY-MM-DD HH:mm')}
 },{collection:'joblist'})
 
+var shanganSchema = new Schema({ 
+    title:{type:String},
+    shangan:{type:String},
+    time : {type:String,default:moment().format('YYYY-MM-DD HH:mm')}
+},{collection:'shangan'})
 exports.joblist = mongoose.model('joblist',joblistSchema)
+exports.shangan = mongoose.model('shangan',shanganSchema)

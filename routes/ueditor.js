@@ -26,6 +26,7 @@ router.get("/ue", ueditor(path.join(__dirname, '../public/'), function(req, res,
   //return false
   var imgDir = '/joblist/attachment/ueditor_images/' //默认上传地址为图片
   var ActionType = req.query.action;
+  console.log('ActionType----->',ActionType)
     if (ActionType === 'uploadimage' || ActionType === 'uploadfile' || ActionType === 'uploadvideo') {
         var file_url = imgDir;//默认上传地址为图片
         if (ActionType === 'uploadfile') {
