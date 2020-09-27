@@ -73,13 +73,14 @@
             if(result.code == 0){
               console.log('add success')
               //墨绿深蓝风
-            let frameindex = layer.alert('ok', {
-              skin: 'layui-layer-molv' //样式类名
-              ,closeBtn: 0
-            }, function(){
-              layer.close(frameindex);
-              //parent.layer.closeAll()
-            });         
+              layer.msg('ok')
+            // let frameindex = layer.msg('ok', {
+            //   skin: 'layui-layer-molv' //样式类名
+            //   ,closeBtn: 0
+            // }, function(){
+            //   layer.close(frameindex);
+            //   //parent.layer.closeAll()
+            // });         
             }
           },
           error:function(msg){

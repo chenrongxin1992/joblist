@@ -7,7 +7,9 @@ const async = require('async')
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: '工作列表' });
-});
+}).get('/yy',function(req,res){
+	res.render('yy',{title:'薄迎迎'})
+})
 router.post('/add_joblist',function(req,res){
 	console.log('urgency--->',req.body.urgency)
 	let newjoblist = new joblist({

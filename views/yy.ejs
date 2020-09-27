@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="stylesheet" href="./layui/css/layui.css" media="all" />
+  </head>
+  <body>
+    <form class="layui-form" action="" style="margin-top:15px;">
+      <div class="layui-form-item">
+        <label class="layui-form-label">工作内容</label>
+        <div class="layui-input-block">
+          <input type="text" name="jobtitle" required  lay-verify="required" class="layui-input" id="jobtitle">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">紧急程度</label>
+        <div class="layui-input-block">
+          <input type="radio" name="urgency" value="0" title="一般" checked>
+          <input type="radio" name="urgency" value="1" title="急">
+        </div>
+      </div>
+      
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">添加</button>
+        </div>
+       </div>
+    </form>
+    <div class="layui-fluid">  
+      	<div class="layui-row">
+        	<div class="layui-col-md12">
+        		<hr/>
+        	</div>
+    	</div>
+    	<div class="layui-row">
+        	<div class="layui-col-md12">
+        		<table lay-even lay-skin="line" lay-size="lg" id="tb_joblist" lay-filter="tb_joblist">
+        			
+        		</table>
+        	</div>
+    	</div>
+    	<br><br>
+    	<div class="layui-row">
+        	<div class="layui-col-md12">
+        		<table lay-even lay-skin="line" lay-size="lg" id="tb_joblist_done" lay-filter="tb_joblist_done">
+        			
+        		</table>
+        	</div>
+    	</div>
+    <div>
+  </body>
+  <script src="/nm/javascripts/jquery3.2.min.js"></script>
+    <script src="/nm/javascripts/layui.all.js"></script>
+    <script>
+    'use strict'
+    $(document).ready(function() {
+      let form = layui.form,$ = layui.$,layer=layui.layer,table=layui.table
+      table.render({
+      	elem:'#tb_joblist',
+      	id:'joblist_tb',
+      	url:'/joblist/tb_list',
+      	page:true,
+      	cols:[[
+      		{field:'jobtitle',title:'待办',event:'jobrecord'}
+      		,{title:'操作', align:'center', toolbar: '#yjfxbar'} //这里的toolbar值是模板元素的选择器
+      	]],
+      	done:function(res,curr,count){
+      		console.log(res.data)
+      		$.each(res.data,function(ii,dd){
+      			if(dd.urgency==1){
+      				console.log('急')
+      				$($('.layui-table-body.layui-table-main tr')[ii]).css('color','red')
+      				$($('.layui-table-body.layui-table-main tr')[ii]).css('font-weight','bold')
+      			}
+      		})
+      	}
+      })
+      table.render({
+      	elem:'#tb_joblist_done',
+      	id:'joblist_tb_done',
+      	url:'/joblist/tb_list_done',
+      	page:true,
+      	cols:[[
+      		{field:'jobtitle',title:'已完成',event:'jobrecord_done'}
+      	]]
+      })
+      table.on('tool(tb_joblist_done)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 		lay-filter="对应的值"
+	  		let data = obj.data; //获得当前行数据
+	 		 let layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+	  		let tr = obj.tr; //获得当前行 tr 的DOM对象
+	  		console.log('dddd')
+	  		if(layEvent === 'jobrecord_done'){ //删除}
+	  			console.log('jobrecord_done-------')
+			  	let index = layui.layer.open({
+		            title : "记录",
+		            type : 2,
+		            offset:'0px',
+		            area: ['900px', '700px'],
+		            content : "jobrecord?_id="+data._id,
+		            success : function(layero, index){
+		            },
+		            end:function(){
+		            	console.log('刷新table')
+		            	table.reload('joblist_tb_done')
+		            }
+		        })
+	  		}
+	  	})
+      //监听工具条
+	table.on('tool(tb_joblist)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+	  let data = obj.data; //获得当前行数据
+	  let layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+	  let tr = obj.tr; //获得当前行 tr 的DOM对象
+	  console.log('dddd')
+	  if(layEvent === 'del'){ //删除
+	    layer.confirm('确定删除吗?',{skin: 'layui-layer-molv' //样式类名
+				                     ,closeBtn: 0}, function(index){
+	      obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+	      layer.close(index);
+	      //向服务端发送删除指令
+	       $.ajax({
+			  	url:'/joblist/joblist_del',
+			  	type:'POST',
+			  	data:data,
+			  	dataType : "json",
+			  	success:function(result){
+			  		if(result.code == 0){
+			  			console.log('del success')	
+			  			table.reload('joblist_tb')		
+			  		}
+			  	},
+			  	error:function(msg){
+			  		console.log('ajax delete error msg',msg)
+			  	}
+			})
+	    });
+	  }else if(layEvent === 'done'){
+	  		$.ajax({
+			  	url:'/joblist/joblist_done',
+			  	type:'POST',
+			  	data:data,
+			  	dataType : "json",
+			  	success:function(result){
+			  		if(result.code == 0){
+			  			console.log('done success')	
+			  			table.reload('joblist_tb')	
+			  			table.reload('joblist_tb_done')		
+			  		}
+			  	},
+			  	error:function(msg){
+			  		console.log('ajax delete error msg',msg)
+			  	}
+			})
+	  }
+	  else if(layEvent === 'changeagency'){//设置前台是否显示
+	  	console.log('changeagency')
+	  	console.log('data',data)
+	  	//dataType.agency = 0
+	  	if($(this).text()=='降低紧急程度'){
+	  		
+	  		data.urgency=0
+	  		console.log('降低紧急程度',data)
+	  		let _this = $(this)
+	  		$.ajax({
+			  	url:'/joblist/change_agency',
+			  	type:'POST',
+			  	data:data,
+			  	dataType : "json",
+			  	success:function(result){
+			  		if(result.code == 0){
+			  			console.log('change success',_this)
+			  			_this.text('提高紧急程度')	
+			  			table.reload('joblist_tb')			
+			  		}
+			  	},
+			  	error:function(msg){
+			  		console.log('ajax hide error msg',msg)
+			  	}
+			})
+	  	}else{
+	  		
+	  		data.urgency=1
+	  		console.log('提高紧急程度',data)
+	  		let _this = $(this)
+	  		$.ajax({
+			  	url:'/joblist/change_agency',
+			  	type:'POST',
+			  	data:data,
+			  	dataType : "json",
+			  	success:function(result){
+			  		if(result.code == 0){
+			  			console.log('change success',_this)		
+			  			_this.text('降低紧急程度')	
+			  			table.reload('joblist_tb')	
+			  			
+			  		}
+			  	},
+			  	error:function(msg){
+			  		console.log('ajax view error msg',msg)
+			  	}
+			})
+	  	}
+	  	return false
+	  }else if(layEvent === 'jobrecord'){
+	  	console.log('jobrecord-------')
+	  	let index = layui.layer.open({
+            title : "记录",
+            type : 2,
+            offset:'0px',
+            area: ['900px', '700px'],
+            content : "jobrecord?_id="+data._id,
+            success : function(layero, index){
+            },
+            end:function(){
+            	console.log('刷新table')
+            	table.reload('joblist_tb')
+            }
+        })
+	  }
+	});
+      //监听提交 13760277012
+      form.on('submit(formDemo)', function(data){
+        console.log('data',data)
+        //return false
+        $.ajax({
+          url:'/joblist/add_joblist',
+          type:'POST',
+          data:data.field,
+          dataType : "json",
+          success:function(result){
+            console.log('result',result)
+            if(result.code == 0){
+              console.log('add success')
+              //墨绿深蓝风
+              table.reload('joblist_tb')	       
+            }else{
+              let frameindex =  layer.alert(result.msg, {
+              skin: 'layui-layer-molv' //样式类名
+              ,closeBtn: 0
+            }, function(){
+              layer.close(frameindex);
+            })//
+              //layer.msg(result.msg )
+              return false
+            }
+          },
+          error:function(msg){
+            console.log('ajax error msg',msg)
+          }
+        })
+        return false;
+      });
+    })
+</script>
+<script type="text/html" id="yjfxbar">
+  {{# if(d.urgency == 1){ }}
+  	<a class="layui-btn layui-btn-xs" lay-event="changeagency" value='0'><i class="layui-icon">&#xe61a;</i>降低紧急程度</a>
+  {{# }else{ }}
+  	<a class="layui-btn layui-btn-xs" lay-event="changeagency" value='1'><i class="layui-icon">&#xe619;</i>提高紧急程度</a>
+  {{# } }}
+  <a class="layui-btn layui-btn-xs" lay-event="done">done</a>
+  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon">&#xe640;</i>删除</a>
+</script>
+</html>
